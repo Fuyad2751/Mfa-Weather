@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="bn" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="MFA Weather - লাইভ আবহাওয়া অ্যাপ | বৃষ্টি, তাপমাত্রা, বাতাস সহ সম্পূর্ণ আবহাওয়ার তথ্য">
+    <meta name="theme-color" content="#1a2a6c">
+    <title>MFA Weather | লাইভ আবহাওয়া অ্যাপ</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- সাইডবার মেনু -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cloud-sun"></i>
+            <h3>MFA Weather</h3>
+            <button class="close-sidebar" id="closeSidebar">&times;</button>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active" data-page="home">
+                <i class="fas fa-home"></i> <span data-key="home">হোম</span>
+            </a>
+            <a href="#" class="menu-item" data-page="forecast">
+                <i class="fas fa-calendar-week"></i> <span data-key="forecast">৫ দিনের পূর্বাভাস</span>
+            </a>
+            <a href="#" class="menu-item" data-page="details">
+                <i class="fas fa-chart-line"></i> <span data-key="details">বিস্তারিত তথ্য</span>
+            </a>
+            <a href="#" class="menu-item" data-page="about">
+                <i class="fas fa-info-circle"></i> <span data-key="about">সম্পর্কে</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <p>© 2026 MFA Weather</p>
+            <p data-key="dataSource">ডাটা: OpenMeteo</p>
+        </div>
+    </div>
+
+    <!-- মেইন কন্টেন্ট -->
+    <div class="main-content">
+        <!-- নেভবার -->
+        <nav class="navbar">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <i class="fas fa-cloud-sun-rain"></i>
+                <span>MFA Weather</span>
+                <small data-key="professional">প্রফেশনাল আবহাওয়া</small>
+            </div>
+            <div class="nav-actions">
+                <!-- থিম টগল -->
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <!-- ভাষা টগল -->
+                <button class="lang-toggle" id="langToggle">
+                    <i class="fas fa-language"></i>
+                    <span>EN</span>
+                </button>
+                <!-- ইউনিট টগল -->
+                <div class="unit-toggle">
+                    <button class="unit-btn active" data-unit="c">°C</button>
+                    <button class="unit-btn" data-unit="f">°F</button>
+                </div>
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-arrows-rotate"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- সার্চ সেকশন -->
+        <div class="search-section">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="cityInput" placeholder="শহরের নাম লিখুন..." value="Dhaka">
+                <button id="searchBtn">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <button id="locationBtn" class="location-btn">
+                <i class="fas fa-location-dot"></i> <span data-key="myLocation">আমার অবস্থান</span>
+            </button>
+        </div>
+
+        <!-- লোডিং ইন্ডিকেটর -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p data-key="loading">আবহাওয়া লোড হচ্ছে...</p>
+            </div>
+        </div>
+
+        <!-- পেজ কন্টেইনার -->
+        <div id="pageContainer">
+            <!-- হোম পেজ -->
+            <div class="page active" id="homePage">
+                <div class="weather-card main-card" id="mainWeatherCard"></div>
+                <div class="section-title">
+                    <i class="fas fa-chart-simple"></i>
+                    <h3 data-key="highlights">আজকের হাইলাইটস</h3>
+                </div>
+                <div class="highlights-grid" id="highlightsGrid"></div>
+                <div class="section-title">
+                    <i class="fas fa-clock"></i>
+                    <h3 data-key="hourly">ঘণ্টাভিত্তিক পূর্বাভাস</h3>
+                </div>
+                <div class="hourly-forecast" id="hourlyForecast"></div>
+            </div>
+
+            <!-- ৫ দিনের পূর্বাভাস পেজ -->
+            <div class="page" id="forecastPage">
+                <div class="section-title">
+                    <i class="fas fa-calendar-week"></i>
+                    <h3 data-key="fiveDayForecast">৫ দিনের আবহাওয়া পূর্বাভাস</h3>
+                </div>
+                <div class="forecast-days" id="forecastDays"></div>
+            </div>
+
+            <!-- বিস্তারিত তথ্য পেজ -->
+            <div class="page" id="detailsPage">
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    <h3 data-key="detailedAnalysis">বিস্তারিত আবহাওয়া বিশ্লেষণ</h3>
+                </div>
+                <div class="details-container" id="detailsContainer"></div>
+            </div>
+
+            <!-- সম্পর্কে পেজ -->
+            <div class="page" id="aboutPage">
+                <div class="about-card">
+                    <i class="fas fa-cloud-moon"></i>
+                    <h2>MFA Weather</h2>
+                    <p data-key="professionalWeather">প্রফেশনাল লাইভ আবহাওয়া অ্যাপ</p>
+                    <div class="about-info">
+                        <div class="about-item">
+                            <i class="fas fa-database"></i>
+                            <span data-key="dataSourceText">ডাটা সোর্স: OpenMeteo API</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span data-key="realTime">রিয়েল টাইম আপডেট</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-globe"></i>
+                            <span data-key="worldwide">বিশ্বের যেকোনো শহর</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span data-key="responsive">মোবাইল ফ্রেন্ডলি ডিজাইন</span>
+                        </div>
+                    </div>
+                    <div class="about-features">
+                        <h4 data-key="features">ফিচারসমূহ</h4>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> <span data-key="rainUpdate">বৃষ্টির পরিমাণ ও সম্ভাবনা</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-key="humidityPressure">আর্দ্রতা ও চাপ</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-key="windInfo">বাতাসের গতি ও দিক</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-key="sunInfo">সূর্যোদয় ও সূর্যাস্ত</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-key="fiveDayInfo">৫ দিনের পূর্বাভাস</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-key="hourlyInfo">ঘণ্টাভিত্তিক আপডেট</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- টোস্ট notification -->
+        <div class="toast-notification" id="toast">
+            <i class="fas fa-info-circle"></i>
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html>
